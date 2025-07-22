@@ -45,7 +45,7 @@ A Python script to manage Logitech's onboard memory profiles. For hid++ 2.0 mice
 
 6. Edit the json file, make changes and load it back to profile 1:
    ```
-   omm.py --pid PID -p 1 --export profile1.json
+   omm.py --pid PID -p 1 --import profile1.json
    ```
    
    
