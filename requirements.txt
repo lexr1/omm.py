@@ -1,0 +1,2 @@
+hid >= 1.0.8
+all-escapes
