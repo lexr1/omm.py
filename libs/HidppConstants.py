@@ -193,15 +193,6 @@ class Modifier(IntEnum, metaclass = MetaEnum):
     rshift = 0x2000
     ralt = 0x4000
     rgui = 0x8000
-        
-class Feature(IntEnum, metaclass = MetaEnum):
-    root = 0
-    switch_host = 0x1814
-    adjustable_dpi = 0x2201
-    report_rate = 0x8060
-    extended_report_rate = 0x8061    
-    color_led_control = 0x8070
-    onboard_profile = 0x8100
 
 class MacroControl(IntEnum, metaclass = MetaEnum):
     no_op = 0x0

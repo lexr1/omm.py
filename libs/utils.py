@@ -40,10 +40,15 @@ def load_bin_from_file(filename):
         print('error while loading', filename)
         return b''
 
-def pretty_print(data):
+def pretty_list(data):
     if isinstance(data, bytearray):
         data = list(data)
-    print(" ".join("0x{:02x}".format(x) for x in data))
+    return " ".join("0x{:02x}".format(x) for x in data)
+
+def pretty_list2(data):
+    if isinstance(data, bytearray):
+        data = list(data)
+    return " ".join("{:02x}".format(x) for x in data)
 
 #https://stackoverflow.com/a/30357446/5007748
 def crc16_ccitt(data):

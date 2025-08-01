@@ -1,6 +1,6 @@
 from .HidppConstants import *
 import struct, io
-from .utils import crc16_ccitt, pretty_print
+from .utils import crc16_ccitt, pretty_list
 from .HidppMacro import Macro
 
 class Profile:

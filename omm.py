@@ -1,18 +1,16 @@
-from libs.LogiHPP import LogiHPP 
-from libs.Hidpp8100 import Hidpp8100
+from libs.LogiHPP20 import LogiHPP20
+from libs.FeatureOnboardProfile import FeatureOnboardProfile
 from libs.HidppConstants import USBReceiver
 from libs.utils import *
 import argparse, os
-
+import configparser 
 
 if __name__ == "__main__":
-    dev_pid = '0xc08b' #G502 Hero
-
+    
     parser = argparse.ArgumentParser(description='Logitech Onboard Memory Manager Python')
     parser.add_argument('-l', '--list', help='list all Logitech devices',  action='store_true', required = False, default=False)    
     parser.add_argument('-p', '--profile', help='profile index, starting from 1', type=int, required=False, default=1)
-    parser.add_argument('--pid', help='usb mouse pid', type=str, required=False, default=dev_pid)
-    parser.add_argument('--receiver', help='mouse is connected through usb receiver', action='store_true', required = False, default=False)
+    parser.add_argument('-n', '--name', help='device name as in "omm.ini"', type=str, required=False, default=None)
     parser.add_argument('--page', help='for debugout option, set dest. page', type=int, required = False, default=255)
     parser.add_argument('--switch', help='switch to profile',  action='store_true', required = False, default=False)
     group = parser.add_mutually_exclusive_group()
@@ -28,9 +26,9 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
     profile_index = args['profile']
+    dev_name = args['name']
     dump_mode = args['dump']
     list_mode = args['list']
-    pid = int(args['pid'], 16)
     do_switch = args['switch']
     toggle_onboard = args['onboard']
     toggle_vis = args['visible']
@@ -42,22 +40,26 @@ if __name__ == "__main__":
     debugin = args['debugin']
     page = args['page']
 
-    is_receiver = args['receiver']
     
     if list_mode:
-        LogiHPP.list_devices()
+        LogiHPP20.list_devices()
         exit()
-        
-    if LogiHPP.is_receiver(pid) or is_receiver:
-        #receiver "sub-index", 1-6 for each paired devices
-        #untested on lightspeed!!
-        print('Wireless usb receiver\n')
-        dev = LogiHPP(pid, [1,2,3,4,5,6])
-    else:
-        #0x00 for bluetooth, 0xff for wired.
-        dev = LogiHPP(pid, [255, 0]) 
-    
-    omm = Hidpp8100(dev)
+
+    config = configparser.ConfigParser()
+    config.read('devices.ini')
+    dev_pid = 0
+    dev_idx = -1
+    if dev_name is None:
+        dev_name = config.sections()[0]
+    if dev_name and dev_name in config:
+        dev_pid = int(config[dev_name]['pid'], 16)
+        dev_idx = int(config[dev_name]['index'], 16)
+    if dev_pid == 0 or dev_idx < 0:
+        print('must set "pid" and "index"')
+        exit()
+
+    dev = LogiHPP20(dev_pid, '', [dev_idx]) 
+    omm = FeatureOnboardProfile(dev)
 
     early_exit = toggle_onboard >=0 or enable_mode or toggle_vis >= 0
     if toggle_onboard >= 0:
