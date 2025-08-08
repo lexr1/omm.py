@@ -24,30 +24,39 @@ A Python script to manage Logitech's onboard memory profiles. For hid++ 2.0 mice
    ```
    pip install -r requirements.txt
    ```
-   
+
 3. List Logitech devices
    ```
    omm.py -l
    ```
-   
-4. Get the necessary PID and test run
+
+4. Now edit `devices.ini` to add the mouse entry, with `pid` and `index`. For `index`, it/s 0xFF for wired mouse, `0x0` for bluetooth, and `1` for wireless mice through the USB receiver. 
+
    ```
-   omm.py --pid PID -p 1 --dump
+   [g502]
+   pid=0xc08b
+   index=0xff
+   ```
+   
+5. Now test run. Use the device name set earlier in `devices.ini`.
+
+   ```
+   omm.py -n g502 -p 1 --dump
    ```
 
    This will get the device info and display the first profile. If it goes through, most likely the mouse is supported.
-   
-5. Save the settings to a json file
+
+6. Save the settings to a json file
 
    ```
-   omm.py --pid PID -p 1 --export profile1.json
+   omm.py -n g502 -p 1 --export profile1.json
    ```
 
-6. Edit the json file, make changes and load it back to profile 1:
+7. Edit the json file, make changes and load it back to profile 1:
    ```
-   omm.py --pid PID -p 1 --import profile1.json
+   omm.py -n g502 -p 1 --import profile1.json
    ```
-   
+
    
 
 run `omm.py --help` for more command line options.

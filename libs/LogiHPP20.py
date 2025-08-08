@@ -35,6 +35,7 @@ class LogiHPP20:
         self.SHORT_REGS = [0x80, 0x81]  #RAP registers: 80 set 81 get
         self.LONG_REGS = [0x82, 0x83]   #82 set 83 get
         self.product_name = ''
+        self.feature_index = {0:0}
         list_short = []
         list_long = []
         list_very_long = []
@@ -153,21 +154,21 @@ class LogiHPP20:
         return out
     
     def find_feature_index(self, val):
-        if val == 0:
-            return 0
+        if val in self.feature_index:
+            return self.feature_index.get(val)
         out = self.call_feature(0, 0, list(struct.pack(">H", val)))
-        if out:
-            out = list(self.call_feature(0, 0, list(struct.pack(">H", val))))
-            return out[4] if out[4] > 0 else -1
+        if out and out[4] > 0:
+            self.feature_index[val]  = out[4]
+            return out[4]
         else:
-            return -1
+            return 0xFF
 
     def has_feature(self, val):
-        return self.find_feature_index(val) >= 0
+        return self.find_feature_index(val) != 0xFF
 
     def call_feature(self, feature_val, func_id, params = [0], read_back = True):
         feature_idx = self.find_feature_index(feature_val)
-        if feature_idx == -1:
+        if feature_idx == 0xFF:
             return None
         if isinstance(params, bytes) or isinstance(params, bytearray):
             params_arr = list(params)

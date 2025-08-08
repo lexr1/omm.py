@@ -10,7 +10,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Logitech Onboard Memory Manager Python')
     parser.add_argument('-l', '--list', help='list all Logitech devices',  action='store_true', required = False, default=False)    
     parser.add_argument('-p', '--profile', help='profile index, starting from 1', type=int, required=False, default=1)
-    parser.add_argument('-n', '--name', help='device name as in "omm.ini"', type=str, required=False, default=None)
+    parser.add_argument('-n', '--name', help='device name as in "devices.ini"', type=str, required=False, default=None)
     parser.add_argument('--page', help='for debugout option, set dest. page', type=int, required = False, default=255)
     parser.add_argument('--switch', help='switch to profile',  action='store_true', required = False, default=False)
     group = parser.add_mutually_exclusive_group()

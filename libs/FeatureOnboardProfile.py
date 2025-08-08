@@ -22,6 +22,8 @@ class FeatureOnboardProfile:
         assert self.profile_format <= 5, f'unsupported profile format {self.profile_format}' 
         assert macro_format == 1, f'unsupported macro format {macro_format}'
         assert self.num_buttons <= 16, f'too many buttons! {self.num_buttons}'
+        if self.page_size == 255:
+            self.page_size = 256
         assert self.page_size in [256, 1024], f'unsupported page size, should be 256 or 1024: {self.page_size}'
         self.num_gbuttons = self.num_buttons if gshift & 0x3 == 0x2 else 0
         self.extended_report_rate = self.dev.has_feature(Feature.extended_report_rate)

@@ -119,6 +119,9 @@ class Profile:
         if keyval in MouseButton:
             ret['action'] = 'button'
             ret['value'] = (MouseButton)(keyval).name
+        elif keystr.startswith('90') and keyval & 0xFFFFFF00 in MouseButton:
+            ret['action'] = 'button'
+            ret['value'] = (MouseButton)(keyval & 0xFFFFFF00).name
         elif keystr.startswith('8002'):
             flag = keyval & 0xff00
             key = keyval & 0xff
