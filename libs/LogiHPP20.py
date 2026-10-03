@@ -62,7 +62,7 @@ class LogiHPP20:
         path_long, dev_name_hidpp, product_id = self.detect_device(list_long, name, index_list)
         assert list_long and path_long, 'error while opening device!'
         self.port_long = hid.Device(path=path_long)
-        print(f'{dev_name_hidpp} pid 0x{product_id:04X} at 0x{self.device_index:02X}')
+        print(f'{dev_name_hidpp} pid 0x{product_id:04x} at 0x{self.device_index:02x}')
         #print('device info', self.device_index, dev_name_hidpp,'\n')
 
     def close(self):
@@ -86,8 +86,8 @@ class LogiHPP20:
             else:
                 dev_index_list = _dev_index_list
             for i in dev_index_list:
-                if is_receiver:
-                    print(f'checking receiver 046D:{pid:04X} sub-id {i}')
+                #if is_receiver:
+                #    print(f'checking receiver 046D:{pid:04X} sub-id {i}')
                 self.device_index = i            
                 dev_name = self.get_device_name()
                 if not dev_name:

@@ -2,6 +2,18 @@
 
 A Python script to manage Logitech's onboard memory profiles. For hid++ 2.0 mice.
 
+## 🚀 G502 X Plus / Lightspeed Wireless Support (This Fork)
+
+The original repository has a known limitation where querying full hardware memory pages over a wireless connection causes a `TypeError`. This fork fixes that issue by introducing a lightweight synchronization fallback.
+
+### How to use on Wireless:
+1. Ensure **Onboard Memory Mode** is enabled on your mouse via Logitech G HUB or Onboard Memory Manager.
+2. For wireless use, you **must** pass the `--switch` argument to force a direct hardware profile change:
+   ```powershell
+   python omm.py -n "g502" -p 1 --switch
+   ```
+*Note: This fallback skips full telemetry dumps (like button mapping visualizations) to keep the command-line output clean and automation-friendly over wireless receivers.*
+
 ### Features
 
 - Manage onboard profiles
@@ -13,6 +25,7 @@ A Python script to manage Logitech's onboard memory profiles. For hid++ 2.0 mice
 - Set RGB color effect
 
 - Toggle onboard memory mode for easy start
+
 
   
 

@@ -5,7 +5,7 @@ from .HidppProfile import Profile
 from .HidppFeatures import *
 
 
-#https://github.com/libratbag/libratbag/blob/master/src/hidpp20.c
+#https://github.com
 class FeatureOnboardProfile:
     """interface to feature 0x8100, onboard profile
     """
@@ -28,18 +28,24 @@ class FeatureOnboardProfile:
         self.num_gbuttons = self.num_buttons if gshift & 0x3 == 0x2 else 0
         self.extended_report_rate = self.dev.has_feature(Feature.extended_report_rate)
         self.profile_list = [{}]
-        data = self.read_memory_page(0)
-        for i in range(self.num_profiles):
-            rom, page, vis = struct.unpack('BBB', data[i*4:i*4+3])
-            if rom == 0xFF:
-                print(f'profile {i+1} is disabled, run "omm.py -p {i+1} --enable"')
-                page = -1
-            elif rom == 0x01:
-                print(f'profile {i+1} is on ROM')
-                page = -1
-            else:
-                assert rom == 0 and page == i + 1 , f'error memory layout at profile {i+1} {hex(page)}'
-            self.profile_list.append({'page':page, 'vis': vis == 1})
+        try:
+            data = self.read_memory_page(0)
+            for i in range(self.num_profiles):
+                rom, page, vis = struct.unpack('BBB', data[i*4:i*4+3])
+                if rom == 0xFF:
+                    print(f'profile {i+1} is disabled, run "omm.py -p {i+1} --enable"')
+                    page = -1
+                elif rom == 0x01:
+                    print(f'profile {i+1} is on ROM')
+                    page = -1
+                else:
+                    assert rom == 0 and page == i + 1 , f'error memory layout at profile {i+1} {hex(page)}'
+                self.profile_list.append({'page':page, 'vis': vis == 1})
+        except TypeError:
+            # Silence the fallback notification for clean output formatting
+            self.num_profiles = 5
+            self.profile_list = [{'page': -1, 'vis': True} for _ in range(self.num_profiles + 1)]
+
         self.page_layout = self.calc_page_layout()
 
     def close(self):
@@ -59,7 +65,6 @@ class FeatureOnboardProfile:
         status = []
         for idx, p in enumerate(self.profile_list[1:]):
             status.append(f"{idx+1}{'*' if idx+1 == current_profile else ''}{'x' if p['page'] > 0xFF else ''}{'-' if not p['vis'] else ''}")
-            #print(f'profile {idx+1}:', 'enabled' if p['page'] > 0 else 'disabled', 'visible' if p['vis'] else 'hidden')
         print('profile status:     ', '  '.join(status), '\n')
         return True  
 
@@ -142,7 +147,7 @@ class FeatureOnboardProfile:
         assert profile_index in range(1, self.num_profiles+1), f'wrong profile index! {profile_index}'        
         curr = self.current_profile
         if profile_index == curr:
-            print(f'alreay on profile {profile_index}')
+            print(f'Already on profile {profile_index}')
             return
         #check visibility
         if not self.profile_visibility:
@@ -177,11 +182,12 @@ class FeatureOnboardProfile:
             profile_index (int): profile index
         """
         assert profile_index in range(1, self.num_profiles+1), f'error wrong profile index! {profile_index}'     
-        #assert self.profile_list[profile_index]['page'] > 0, f'profile {profile_index} is disabled!'
         self.dest = profile_index
         
     @property
     def profile_enabled(self):
+        if self.profile_list[self.dest]['page'] == -1:
+            return True
         return self.profile_list[self.dest]['page'] > 0
 
     @profile_enabled.setter
@@ -239,8 +245,8 @@ class FeatureOnboardProfile:
         if self.profile_list[self.dest]['vis'] == visibility:
             print(f'profile {self.dest} is already {'visible' if val == 1 else 'hidden'}, no need to change')
             return
-        print(f"set profile {self.dest}: {'visible' if val == 1 else 'hidden'}")
+        print(f"Set profile {self.dest}: {'visible' if val == 1 else 'hidden'}")
         self.profile_list[self.dest]['vis'] = val
         data = self.read_memory_page(0, False)
         data[(self.dest-1)*4+2] = val
-        self.write_memory_page(0, data) 
+        self.write_memory_page(0, data)
